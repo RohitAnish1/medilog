@@ -175,37 +175,6 @@ export default function CreateFlashcardsPage() {
             </CardFooter>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Generate with AI</CardTitle>
-              <CardDescription>Let AI generate flashcards from your medical information.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="medical-info">Medical Information</Label>
-                <Textarea
-                  id="medical-info"
-                  placeholder="Enter your medical information, doctor's notes, or prescription details"
-                  className="min-h-[220px]"
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button onClick={generateFlashcards} className="w-full" disabled={isGenerating}>
-                {isGenerating ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Brain className="mr-2 h-4 w-4" />
-                    Generate Flashcards
-                  </>
-                )}
-              </Button>
-            </CardFooter>
-          </Card>
         </div>
 
         {flashcards.length > 0 && (

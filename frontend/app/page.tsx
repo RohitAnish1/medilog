@@ -4,6 +4,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Brain, Clock, FileText, Shield, LogIn } from "lucide-react"
 import { motion } from "framer-motion"
+import  Notification  from "@/app/Notifications";
+
 
 export default function LandingPage() {
   return (
@@ -39,7 +41,7 @@ export default function LandingPage() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   variant="outline"
-                  className="text-white border-white hover:bg-cool-cyan hover:text-white hover:border-cool-cyan transition-all duration-300 flex items-center gap-2"
+                  className="bg-cool-cyan hover:bg-cool-cyan hover:text-white hover:border-cool-cyan transition-all duration-300 flex items-center gap-2"
                 >
                   <LogIn className="h-4 w-4" />
                   <span>Log In</span>
@@ -98,7 +100,7 @@ export default function LandingPage() {
                 <img
                   alt="MediLog Dashboard Preview"
                   className="aspect-video overflow-hidden rounded-xl object-cover object-center shadow-elevated"
-                  src="/placeholder.svg?height=550&width=800"
+                  src="/home.jpg?height=550&width=800"
                 />
               </div>
             </div>
@@ -324,6 +326,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
+        <Notification />
       </main>
       <footer className="border-t bg-deep-teal text-white">
         <div className="container flex flex-col gap-6 py-8 md:flex-row md:items-center md:justify-between md:py-12">
