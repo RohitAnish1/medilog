@@ -1,4 +1,3 @@
-
 // import { initializeApp } from "firebase/app";
 // import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
@@ -78,7 +77,6 @@ const fetchFlashcards = async () => {
 
   return snapshot.docs.map((doc) => {
     const data = doc.data();
-    console.log(data); // Logs the Firestore document data
     return {
       id: doc.id,
       title: data.title || "Untitled",
@@ -92,13 +90,12 @@ const fetchFlashcards = async () => {
 const saveFlashcard = async (title: string, content: string, category: string) => {
   const flashcardsCollection = collection(db, "FLASH-DATA");
   try {
-    const docRef = await addDoc(flashcardsCollection, {
+    await addDoc(flashcardsCollection, {
       title: title || "Untitled",
       content: content || "No content available",
       category: category || "Uncategorized",
       date: new Date().toISOString(),
     });
-    console.log("Document written with ID: ", docRef.id);
   } catch (error) {
     console.error("Error adding document: ", error);
   }

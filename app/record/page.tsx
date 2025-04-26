@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -11,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { Brain, Loader2, Mic, MicOff } from "lucide-react";
+import { saveFlashcard } from "@/lib/firebase"; // Import the saveFlashcard function
 
 // Import summarizeText function from your module
 import { summarizeText } from "../../summery.js"; // Adjust the path if needed
@@ -116,9 +116,12 @@ export default function RecordPage() {
 
       if (formattedSummary) {
         setSummary(formattedSummary.content); // Update the summary state
+
+        // Save the summary to Firebase
+        await saveFlashcard("Generated Summary", formattedSummary.content, "Summaries");
         toast({
-          title: "Summary generated",
-          description: "The summary has been successfully generated and displayed.",
+          title: "Summary saved",
+          description: "The summary has been saved as a flashcard.",
         });
       }
     } catch (error) {

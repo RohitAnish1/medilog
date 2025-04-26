@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react"
+import { fetchFlashcards } from "@/lib/firebase"; // Import the fetchFlashcards function
 
 type Flashcard = {
   title: string
@@ -29,56 +30,18 @@ export default function ReviewFlashcardsPage() {
   const categories = ["Medications", "Symptoms", "Procedures", "Doctor's Advice", "All"]
 
   useEffect(() => {
-    // In a real app, this would be an API call
-    // For now, we'll just use localStorage or mock data
-    const savedFlashcards = JSON.parse(localStorage.getItem("medilog-flashcards") || "[]")
+    const loadFlashcards = async () => {
+      try {
+        const fetchedFlashcards = await fetchFlashcards(); // Fetch flashcards from Firebase
+        setFlashcards(fetchedFlashcards);
+        setFilteredFlashcards(fetchedFlashcards);
+      } catch (error) {
+        console.error("Error fetching flashcards:", error);
+      }
+    };
 
-    // If no saved flashcards, use mock data
-    const mockFlashcards: Flashcard[] =
-      savedFlashcards.length > 0
-        ? savedFlashcards
-        : [
-            {
-              title: "Blood Pressure",
-              content: "Normal range: 120/80 mmHg. Your current reading: 130/85 mmHg.",
-              date: "2023-05-15",
-              category: "Medications",
-            },
-            {
-              title: "Lisinopril",
-              content: "Take 10mg once daily in the morning with food. Used to treat high blood pressure.",
-              date: "2023-05-15",
-              category: "Medications",
-            },
-            {
-              title: "Exercise Recommendation",
-              content: "30 minutes of moderate exercise at least 5 days per week.",
-              date: "2023-05-10",
-              category: "Doctor's Advice",
-            },
-            {
-              title: "Cholesterol Levels",
-              content: "Total: 180 mg/dL, LDL: 100 mg/dL, HDL: 50 mg/dL, Triglycerides: 150 mg/dL",
-              date: "2023-04-28",
-              category: "Procedures",
-            },
-            {
-              title: "Follow-up Appointment",
-              content: "Schedule a follow-up in 3 months for blood pressure monitoring.",
-              date: "2023-05-15",
-              category: "Doctor's Advice",
-            },
-            {
-              title: "Dietary Recommendations",
-              content: "Reduce sodium intake. Aim for less than 2,300 mg per day. Increase fruits and vegetables.",
-              date: "2023-05-10",
-              category: "Doctor's Advice",
-            },
-          ]
-
-    setFlashcards(mockFlashcards)
-    setFilteredFlashcards(mockFlashcards)
-  }, [])
+    loadFlashcards();
+  }, []);
 
   useEffect(() => {
     // Filter flashcards based on search term and category
