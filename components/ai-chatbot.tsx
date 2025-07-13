@@ -1,39 +1,63 @@
+// ============================================================================
+// AI CHATBOT COMPONENT - Interactive Assistant Interface
+// ============================================================================
+// This component provides an AI-powered chat assistant that appears on the landing page
+// Features include real-time messaging, window controls (minimize/maximize/close),
+// voice input capability, and contextual help about MediLog features
+
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { MessageCircle, X, Minimize2, Maximize2, Send, Mic, Bot, Loader2 } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { useChat } from "ai/react"
-import { motion, AnimatePresence } from "framer-motion"
+import { usePathname } from "next/navigation"          // Next.js routing hook
+import { Button } from "@/components/ui/button"        // Reusable button component
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"  // Card layout components
+import { Input } from "@/components/ui/input"          // Text input component
+import { MessageCircle, X, Minimize2, Maximize2, Send, Mic, Bot, Loader2 } from "lucide-react"  // Icon components
+import { cn } from "@/lib/utils"                       // Utility for conditional class names
+import { useChat } from "ai/react"                     // Vercel AI SDK hook for chat functionality
+import { motion, AnimatePresence } from "framer-motion"  // Animation library for smooth transitions
 
+// ============================================================================
+// TYPE DEFINITIONS - Chat Message Structure
+// ============================================================================
 type Message = {
-  id: string
-  role: "user" | "assistant"
-  content: string
+  id: string                      // Unique identifier for each message
+  role: "user" | "assistant"      // Message sender type
+  content: string                 // Message text content
 }
 
+// ============================================================================
+// AI CHATBOT MAIN COMPONENT - Chat Interface Logic
+// ============================================================================
 export function AIChatbot() {
-  const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
-  const [isMinimized, setIsMinimized] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [showChatbot, setShowChatbot] = useState(false)
+  // ============================================================================
+  // STATE MANAGEMENT - Component State Variables
+  // ============================================================================
+  const pathname = usePathname()                           // Current page path
+  const [isOpen, setIsOpen] = useState(false)             // Chat window open/closed state
+  const [isMinimized, setIsMinimized] = useState(false)   // Chat window minimized state
+  const messagesEndRef = useRef<HTMLDivElement>(null)     // Reference for auto-scrolling to bottom
+  const [showChatbot, setShowChatbot] = useState(false)   // Whether to display chatbot on current page
 
+  // ============================================================================
+  // PAGE-BASED VISIBILITY - Show Chatbot Only on Landing Page
+  // ============================================================================
+  // Controls when the chatbot is visible based on current route
   useEffect(() => {
     if (pathname === "/") {
-      setShowChatbot(true)
+      setShowChatbot(true)   // Show on landing page
     } else {
-      setShowChatbot(false)
+      setShowChatbot(false)  // Hide on all other pages
     }
   }, [pathname])
 
+  // ============================================================================
+  // CHAT FUNCTIONALITY - AI SDK Integration
+  // ============================================================================
+  // Uses Vercel AI SDK to handle chat messages and API communication
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/chat",
-    initialMessages: [
+    api: "/api/chat",              // Backend API endpoint for chat
+    initialMessages: [             // Welcome message when chat starts
       {
         id: "welcome-message",
         role: "assistant",
@@ -42,51 +66,75 @@ export function AIChatbot() {
     ],
   })
 
+  // ============================================================================
+  // WINDOW CONTROL FUNCTIONS - Chat Interface Management
+  // ============================================================================
+  
+  // Toggle chat window open/closed or restore from minimized state
   const toggleChat = () => {
     if (isMinimized) {
-      setIsMinimized(false)
+      setIsMinimized(false)        // Restore from minimized
     } else {
-      setIsOpen(!isOpen)
+      setIsOpen(!isOpen)           // Toggle open/closed
     }
   }
 
+  // Minimize chat window to title bar only
   const minimizeChat = () => {
     setIsMinimized(true)
   }
 
+  // Restore chat window from minimized state
   const maximizeChat = () => {
     setIsMinimized(false)
   }
 
+  // Close chat window completely
   const closeChat = () => {
     setIsOpen(false)
     setIsMinimized(false)
   }
 
+  // ============================================================================
+  // AUTO-SCROLL EFFECT - Keep Messages Visible
+  // ============================================================================
+  // Automatically scrolls to bottom when new messages arrive
   useEffect(() => {
     if (messagesEndRef.current && isOpen && !isMinimized) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }
   }, [messages, isOpen, isMinimized])
 
+  // ============================================================================
+  // VOICE INPUT HANDLER - Future Feature Placeholder
+  // ============================================================================
   // Mock function for voice input (future implementation)
   const handleVoiceInput = () => {
     alert("Voice input will be available in a future update!")
   }
 
+  // ============================================================================
+  // CONDITIONAL RENDERING - Hide Chatbot on Non-Landing Pages
+  // ============================================================================
+  // Don't render anything if chatbot shouldn't be shown on current page
   if (!showChatbot) {
     return null
   }
 
+  // ============================================================================
+  // MAIN RENDER - Chat Interface UI
+  // ============================================================================
   return (
     <div className="fixed bottom-4 right-4 z-50">
+      {/* Animation wrapper for smooth show/hide transitions */}
       <AnimatePresence>
+        {/* Main chat window - shown when open and not minimized */}
         {isOpen && !isMinimized && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}    // Entry animation
+            animate={{ opacity: 1, y: 0, scale: 1 }}        // Visible state
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}       // Exit animation
+            transition={{ duration: 0.2 }}                  // Animation timing
             className="mb-2"
           >
             <Card className="w-80 md:w-96 shadow-elevated border-deep-teal/20 overflow-hidden">
@@ -116,7 +164,7 @@ export function AIChatbot() {
               </CardHeader>
               <CardContent className="p-3 h-80 overflow-y-auto bg-navy-blue/10">
                 <div className="space-y-4">
-                  {messages.map((message) => (
+                  {messages.map((message: Message) => (
                     <div
                       key={message.id}
                       className={cn("flex", message.role === "user" ? "justify-end" : "justify-start")}

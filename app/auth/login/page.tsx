@@ -1,51 +1,82 @@
+// ============================================================================
+// LOGIN PAGE - User Authentication Interface
+// ============================================================================
+// This component provides the login interface for existing MediLog users
+// Features include email/password authentication, role selection (patient/caregiver),
+// form validation, loading states, and error handling with toast notifications
+
 "use client"
 
 import type React from "react"
 
-import { useState } from "react"
-import Link from "next/link"
-import { useAuth } from "@/components/auth-provider"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Brain, Loader2 } from "lucide-react"
-import { useToast } from "@/components/ui/use-toast"
+import { useState } from "react"                                // React state management
+import Link from "next/link"                                    // Next.js navigation component
+import { useAuth } from "@/components/auth-provider"            // Authentication context hook
+import { Button } from "@/components/ui/button"                 // UI button component
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card" // Card layout components
+import { Input } from "@/components/ui/input"                   // Form input component
+import { Label } from "@/components/ui/label"                   // Form label component
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group" // Radio button components for role selection
+import { Brain, Loader2 } from "lucide-react"                  // Icon components
+import { useToast } from "@/components/ui/use-toast"            // Toast notification hook
 
+// ============================================================================
+// LOGIN PAGE MAIN COMPONENT
+// ============================================================================
 export default function LoginPage() {
-  const { login, isLoading } = useAuth()
-  const { toast } = useToast()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [role, setRole] = useState<"patient" | "caregiver">("patient")
+  // ============================================================================
+  // HOOKS AND STATE - Authentication and UI State Management
+  // ============================================================================
+  const { login, isLoading } = useAuth()                       // Authentication functions and loading state
+  const { toast } = useToast()                                 // Toast notification system
+  
+  // Form input state variables
+  const [email, setEmail] = useState("")                       // User email input
+  const [password, setPassword] = useState("")                 // User password input
+  const [role, setRole] = useState<"patient" | "caregiver">("patient") // User role selection
 
+  // ============================================================================
+  // FORM SUBMISSION HANDLER - Process Login Attempt
+  // ============================================================================
+  // Handles form submission, calls authentication API, and manages success/error states
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault()                                          // Prevent default form submission
 
     try {
+      // Attempt to log in with provided credentials
       await login(email, password, role)
+      
+      // Show success notification
       toast({
         title: "Login successful",
         description: "Welcome back to MediLog!",
       })
     } catch (error) {
+      // Show error notification if login fails
       toast({
         title: "Login failed",
         description: "Please check your credentials and try again.",
-        variant: "destructive",
+        variant: "destructive",                                // Red/error styling
       })
     }
   }
 
+  // ============================================================================
+  // LOGIN FORM RENDER - User Interface Layout
+  // ============================================================================
   return (
     <div className="flex min-h-screen items-center justify-center bg-soft-gray p-4">
       <Card className="w-full max-w-md shadow-elevated border-deep-teal/10">
+        
+        {/* ============================================================================ */}
+        {/* CARD HEADER - Branding and Title */}
+        {/* ============================================================================ */}
         <CardHeader className="space-y-1">
+          {/* App Logo and Brand Link */}
           <div className="flex items-center justify-center mb-6">
             <Link href="/" className="flex items-center gap-2 font-bold text-xl text-deep-teal">
-              <Brain className="h-6 w-6" />
-              <span>MediLog</span>
+              <Brain className="h-6 w-6" />               {/* Brain icon for medical/AI theme */}
+              <span>MediLog</span>                        {/* Application name */}
             </Link>
           </div>
           <CardTitle className="text-2xl font-bold text-center">Log in to your account</CardTitle>
@@ -83,7 +114,7 @@ export default function LoginPage() {
               <RadioGroup
                 defaultValue="patient"
                 value={role}
-                onValueChange={(value) => setRole(value as "patient" | "caregiver")}
+                onValueChange={(value: string) => setRole(value as "patient" | "caregiver")}
                 className="flex space-x-2"
               >
                 <div className="flex items-center space-x-2">

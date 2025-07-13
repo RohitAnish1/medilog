@@ -1,51 +1,80 @@
+// ============================================================================
+// VOICE RECORDING PAGE - Medical Interaction Recording Interface
+// ============================================================================
+// This component provides voice-to-text recording functionality for medical interactions
+// Features include real-time speech recognition, AI summarization, and flashcard creation
+// Uses Web Speech API for voice recognition and AI for content processing
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "@/components/auth-provider";
-import { DashboardLayout } from "@/components/dashboard-layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
-import { Brain, Loader2, Mic, MicOff } from "lucide-react";
-import { saveFlashcard } from "@/lib/firebase"; // Import the saveFlashcard function
+import { useAuth } from "@/components/auth-provider";           // Authentication context
+import { DashboardLayout } from "@/components/dashboard-layout"; // Dashboard wrapper
+import { Button } from "@/components/ui/button";                 // UI button component
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"; // Card components
+import { Textarea } from "@/components/ui/textarea";             // Text area for transcript editing
+import { Label } from "@/components/ui/label";                   // Form labels
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Tab navigation
+import { useToast } from "@/components/ui/use-toast";            // Toast notifications
+import { Brain, Loader2, Mic, MicOff } from "lucide-react";     // Icon components
+import { saveFlashcard } from "@/lib/firebase";                 // Firebase flashcard storage function
 
 // Import summarizeText function from your module
-import { summarizeText } from "../../summery.js"; // Adjust the path if needed
+import { summarizeText } from "../../summery.js";               // AI summarization utility
 
+// ============================================================================
+// VOICE RECORDING MAIN COMPONENT
+// ============================================================================
 export default function RecordPage() {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [isRecording, setIsRecording] = useState(false);
-  const [transcript, setTranscript] = useState("");
-  const [summary, setSummary] = useState("");
-  const [isSummarizing, setIsSummarizing] = useState(false);
+  const { user } = useAuth();                                   // Current authenticated user
+  const { toast } = useToast();                                 // Toast notification system
+  
+  // ============================================================================
+  // STATE MANAGEMENT - Recording and Content State
+  // ============================================================================
+  const [isRecording, setIsRecording] = useState(false);        // Recording active state
+  const [transcript, setTranscript] = useState("");             // Voice-to-text transcript
+  const [summary, setSummary] = useState("");                   // AI-generated summary
+  const [isSummarizing, setIsSummarizing] = useState(false);    // Summary generation loading state
 
+  // Reference to speech recognition instance
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
+  // ============================================================================
+  // SPEECH RECOGNITION INITIALIZATION - Setup Voice-to-Text
+  // ============================================================================
+  // Initializes Web Speech API for real-time voice recognition
   useEffect(() => {
     console.log("Initializing Speech Recognition...");
 
-    // Check if the browser supports SpeechRecognition
+    // Check if the browser supports SpeechRecognition (Chrome/Edge preferred)
     if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
+      
+      // Configure speech recognition settings
+      recognitionRef.current.continuous = true;          // Keep listening continuously
+      recognitionRef.current.interimResults = true;      // Show results as user speaks
 
+      // ============================================================================
+      // SPEECH RESULT HANDLER - Process Voice Recognition Results
+      // ============================================================================
       recognitionRef.current.onresult = (event) => {
         let finalTranscript = transcript;
+        
+        // Process all speech recognition results
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript + " ";
+            finalTranscript += event.results[i][0].transcript + " ";  // Add finalized text
           }
         }
         console.log("Updated transcript:", finalTranscript);
-        setTranscript(finalTranscript);
+        setTranscript(finalTranscript);                  // Update transcript state
       };
 
+      // ============================================================================
+      // ERROR HANDLING - Speech Recognition Error Management
+      // ============================================================================
       recognitionRef.current.onerror = (event) => {
         console.error("Speech recognition error:", event.error);
         setIsRecording(false);

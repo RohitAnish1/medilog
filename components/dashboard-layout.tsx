@@ -1,14 +1,21 @@
+// ============================================================================
+// DASHBOARD LAYOUT COMPONENT - Shared Dashboard UI Structure
+// ============================================================================
+// This component provides the common layout structure for both patient and caregiver dashboards
+// Features include responsive sidebar navigation, user menu, role-based navigation items,
+// and consistent header/content layout across all dashboard pages
+
 "use client"
 
 import type React from "react"
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useAuth } from "@/components/auth-provider"
-import { Button } from "@/components/ui/button"
+import { useState } from "react"                              // React state management
+import Link from "next/link"                                 // Next.js navigation component
+import { usePathname } from "next/navigation"                // Hook to get current page path
+import { useAuth } from "@/components/auth-provider"         // Authentication context
+import { Button } from "@/components/ui/button"              // UI button component
 import {
-  DropdownMenu,
+  DropdownMenu,                                              // User menu dropdown components
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -16,37 +23,58 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-  Bell,
-  Brain,
-  Calendar,
-  ChevronDown,
-  ClipboardList,
-  FileText,
-  Home,
-  LogOut,
-  Menu,
-  Mic,
-  PanelLeft,
-  PlusCircle,
-  Search,
-  Settings,
-  User,
+  Bell,              // Notification icon
+  Brain,             // App logo icon
+  Calendar,          // Calendar/scheduling icon
+  ChevronDown,       // Dropdown arrow icon
+  ClipboardList,     // Task/list icon
+  FileText,          // Document icon
+  Home,              // Dashboard home icon
+  LogOut,            // Logout icon
+  Menu,              // Mobile menu icon
+  Mic,               // Recording icon
+  PanelLeft,         // Sidebar toggle icon
+  PlusCircle,        // Add/create icon
+  Search,            // Search icon
+  Settings,          // Settings icon
+  User,              // User profile icon
 } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet" // Mobile sidebar components
 
+// ============================================================================
+// TYPE DEFINITIONS - Component Props Interface
+// ============================================================================
 interface DashboardLayoutProps {
-  children: React.ReactNode
-  role: "patient" | "caregiver"
+  children: React.ReactNode                    // Page content to render within layout
+  role: "patient" | "caregiver"               // User role determines navigation options
 }
 
-export function DashboardLayout({ children, role }: DashboardLayoutProps) {
-  const { user, logout } = useAuth()
-  const pathname = usePathname()
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+// Navigation item interface for type safety
+interface NavigationItem {
+  title: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+}
 
-  const patientNavItems = [
+// ============================================================================
+// DASHBOARD LAYOUT MAIN COMPONENT
+// ============================================================================
+export function DashboardLayout({ children, role }: DashboardLayoutProps) {
+  // ============================================================================
+  // HOOKS AND STATE - Component State Management
+  // ============================================================================
+  const { user, logout } = useAuth()                        // Current user and logout function
+  const pathname = usePathname()                            // Current page path for active nav highlighting
+  const [sidebarOpen, setSidebarOpen] = useState(true)     // Desktop sidebar visibility state
+
+  // ============================================================================
+  // NAVIGATION CONFIGURATION - Role-Based Menu Items
+  // ============================================================================
+  
+  // Patient navigation menu items - focused on personal health management
+  const patientNavItems: NavigationItem[] = [
     {
-      title: "Dashboard",
+      title: "Dashboard",                                    // Main dashboard overview
       href: "/dashboard/patient",
       icon: Home,
     },
@@ -77,7 +105,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
     },
   ]
 
-  const caregiverNavItems = [
+  const caregiverNavItems: NavigationItem[] = [
     {
       title: "Dashboard",
       href: "/dashboard/caregiver",
@@ -115,39 +143,39 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-deep-teal text-white px-4 sm:px-6 shadow-sm">
-        <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/20" aria-label="Toggle Menu">
-          <Sheet>
-            <SheetTrigger asChild>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/20" aria-label="Toggle Menu">
               <Menu className="h-5 w-5" />
-            </SheetTrigger>
-            <SheetContent side="left" className="w-64 sm:max-w-sm bg-soft-gray">
-              <div className="flex h-full flex-col">
-                <div className="flex items-center gap-2 border-b py-4">
-                  <Brain className="h-6 w-6 text-deep-teal" />
-                  <span className="text-lg font-bold">MediLog</span>
-                </div>
-                <nav className="flex-1 overflow-auto py-4">
-                  <div className="flex flex-col gap-1">
-                    {navItems.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                          pathname === item.href
-                            ? "bg-deep-teal text-white"
-                            : "text-dark-charcoal hover:bg-deep-teal/10"
-                        }`}
-                      >
-                        <item.icon className="h-4 w-4" />
-                        {item.title}
-                      </Link>
-                    ))}
-                  </div>
-                </nav>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-64 sm:max-w-sm bg-soft-gray">
+            <div className="flex h-full flex-col">
+              <div className="flex items-center gap-2 border-b py-4">
+                <Brain className="h-6 w-6 text-deep-teal" />
+                <span className="text-lg font-bold">MediLog</span>
               </div>
-            </SheetContent>
-          </Sheet>
-        </Button>
+              <nav className="flex-1 overflow-auto py-4">
+                <div className="flex flex-col gap-1">
+                  {navItems.map((item: NavigationItem) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                        pathname === item.href
+                          ? "bg-deep-teal text-white"
+                          : "text-dark-charcoal hover:bg-deep-teal/10"
+                      }`}
+                    >
+                      <item.icon className="h-4 w-4" />
+                      {item.title}
+                    </Link>
+                  ))}
+                </div>
+              </nav>
+            </div>
+          </SheetContent>
+        </Sheet>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -204,7 +232,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
           }`}
         >
           <nav className="flex flex-col gap-1 p-4">
-            {navItems.map((item) => (
+            {navItems.map((item: NavigationItem) => (
               <Link
                 key={item.href}
                 href={item.href}

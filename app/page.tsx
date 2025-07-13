@@ -1,21 +1,38 @@
+// ============================================================================
+// LANDING PAGE - Main Marketing/Welcome Page
+// ============================================================================
+// This is the main landing page that introduces MediLog to new users
+// Features include hero section, feature highlights, how-it-works explanation,
+// testimonials, and call-to-action buttons for registration/login
+
 "use client"
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, Brain, Clock, FileText, Shield, LogIn } from "lucide-react"
-import { motion } from "framer-motion"
-import  Notification  from "@/app/Notifications";
+import Link from "next/link"                                     // Next.js navigation component
+import { Button } from "@/components/ui/button"                  // Reusable button component
+import { ArrowRight, Brain, Clock, FileText, Shield, LogIn } from "lucide-react" // Icon components
+import { motion } from "framer-motion"                           // Animation library
+import  Notification  from "@/app/Notifications";               // Notification component
 
-
+// ============================================================================
+// LANDING PAGE MAIN COMPONENT
+// ============================================================================
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
+      
+      {/* ============================================================================ */}
+      {/* HEADER SECTION - Navigation and Brand */}
+      {/* ============================================================================ */}
       <header className="border-b bg-deep-teal text-white">
         <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+          
+          {/* Brand Logo and Name */}
           <div className="flex items-center gap-2 font-bold text-xl">
-            <Brain className="h-6 w-6" />
-            <span>MediLog</span>
+            <Brain className="h-6 w-6" />              {/* Brain icon representing AI/medical intelligence */}
+            <span>MediLog</span>                       {/* Application name */}
           </div>
+          
+          {/* Navigation Menu - Hidden on mobile */}
           <nav className="hidden md:flex gap-6">
             <Link
               href="#features"
@@ -36,7 +53,10 @@ export default function LandingPage() {
               Testimonials
             </Link>
           </nav>
+          
+          {/* Authentication Buttons */}
           <div className="flex items-center gap-4">
+            {/* Login Button */}
             <Link href="/auth/login">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
@@ -48,6 +68,7 @@ export default function LandingPage() {
                 </Button>
               </motion.div>
             </Link>
+            {/* Sign Up Button */}
             <Link href="/auth/register">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button className="bg-cool-cyan hover:bg-cool-cyan/90 text-white transition-all duration-300 shadow-md hover:shadow-lg">
@@ -58,21 +79,36 @@ export default function LandingPage() {
           </div>
         </div>
       </header>
+      
+      {/* ============================================================================ */}
+      {/* MAIN CONTENT AREA */}
+      {/* ============================================================================ */}
       <main className="flex-1">
+        
+        {/* ============================================================================ */}
+        {/* HERO SECTION - Primary Value Proposition */}
+        {/* ============================================================================ */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-soft-gray">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 xl:grid-cols-2">
+              
+              {/* Hero Text Content */}
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
+                  {/* Main Headline */}
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-deep-teal">
                     Streamline Your Medical Interactions
                   </h1>
+                  {/* Value Proposition Description */}
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
                     MediLog is an AI-powered platform designed to assist both doctors/caregivers and patients in
                     logging, managing, and summarizing medical interactions.
                   </p>
                 </div>
+                
+                {/* Call-to-Action Buttons */}
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  {/* Primary CTA - Get Started */}
                   <Link href="/auth/register">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button
@@ -83,6 +119,7 @@ export default function LandingPage() {
                       </Button>
                     </motion.div>
                   </Link>
+                  {/* Secondary CTA - Learn More */}
                   <Link href="#how-it-works">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                       <Button
@@ -96,6 +133,8 @@ export default function LandingPage() {
                   </Link>
                 </div>
               </div>
+              
+              {/* Hero Image/Visual */}
               <div className="flex items-center justify-center">
                 <img
                   alt="MediLog Dashboard Preview"

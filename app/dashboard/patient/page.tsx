@@ -1,82 +1,110 @@
+// ============================================================================
+// PATIENT DASHBOARD - Main Patient Interface
+// ============================================================================
+// This component serves as the main dashboard for patient users
+// Features include quick action buttons, upcoming medication reminders,
+// and recent medical interactions overview for easy patient management
+
 "use client"
 
-import { useAuth } from "@/components/auth-provider"
-import { DashboardLayout } from "@/components/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Clock, FileText, Mic, PlusCircle } from "lucide-react"
-import Link from "next/link"
+import { useAuth } from "@/components/auth-provider"           // Authentication context
+import { DashboardLayout } from "@/components/dashboard-layout" // Dashboard wrapper component
+import { Button } from "@/components/ui/button"                 // Reusable button component
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card" // Card components
+import { Calendar, Clock, FileText, Mic, PlusCircle } from "lucide-react" // Icon components
+import Link from "next/link"                                    // Next.js navigation component
 
+// ============================================================================
+// PATIENT DASHBOARD MAIN COMPONENT
+// ============================================================================
 export default function PatientDashboard() {
-  const { user } = useAuth()
+  const { user } = useAuth()  // Get current authenticated user
 
+  // ============================================================================
+  // QUICK ACTIONS DATA - Primary Feature Access Points
+  // ============================================================================
+  // Configuration for main dashboard action cards that link to key features
   const quickActions = [
     {
       title: "Start Recording",
       description: "Record a medical interaction with voice-to-text",
-      icon: Mic,
-      href: "/record",
-      color: "bg-blue-100 dark:bg-blue-900",
+      icon: Mic,                           // Microphone icon for recording
+      href: "/record",                     // Link to voice recording page
+      color: "bg-blue-100 dark:bg-blue-900", // Card background color
     },
     {
       title: "Create Flashcards",
       description: "Create flashcards for important medical information",
-      icon: PlusCircle,
-      href: "/flashcards/create",
+      icon: PlusCircle,                    // Plus icon for creation
+      href: "/flashcards/create",          // Link to flashcard creation
       color: "bg-green-100 dark:bg-green-900",
     },
     {
       title: "Review Flashcards",
       description: "Review your saved medical flashcards",
-      icon: FileText,
-      href: "/flashcards/review",
+      icon: FileText,                      // Document icon for review
+      href: "/flashcards/review",          // Link to flashcard review
       color: "bg-purple-100 dark:bg-purple-900",
     },
     {
       title: "Medicine Reminder",
       description: "Set reminders for your medications",
-      icon: Clock,
-      href: "/medicine-reminder",
+      icon: Clock,                         // Clock icon for reminders
+      href: "/medicine-reminder",          // Link to medication reminders
       color: "bg-amber-100 dark:bg-amber-900",
     },
   ]
 
+  // ============================================================================
+  // UPCOMING REMINDERS DATA - Next Medication Schedule
+  // ============================================================================
+  // Mock data for displaying upcoming medication reminders (would come from database)
   const upcomingReminders = [
     {
-      medicine: "Lisinopril",
+      medicine: "Lisinopril",              // Blood pressure medication
       time: "8:00 AM",
       date: "Today",
     },
     {
-      medicine: "Metformin",
+      medicine: "Metformin",               // Diabetes medication
       time: "1:00 PM",
       date: "Today",
     },
     {
-      medicine: "Atorvastatin",
+      medicine: "Atorvastatin",            // Cholesterol medication
       time: "8:00 PM",
       date: "Today",
     },
   ]
 
+  // ============================================================================
+  // RECENT INTERACTIONS DATA - Medical History Preview
+  // ============================================================================
+  // Mock data for recent doctor visits and medical interactions
   const recentInteractions = [
     {
       doctor: "Dr. Sarah Johnson",
-      specialty: "Cardiologist",
+      specialty: "Cardiologist",           // Heart specialist
       date: "May 15, 2023",
-      summary: "Routine checkup for hypertension. Blood pressure was 130/85.",
+      summary: "Routine checkup for hypertension. Blood pressure was 130/85.", // Visit summary
     },
     {
       doctor: "Dr. Michael Chen",
-      specialty: "Endocrinologist",
+      specialty: "Endocrinologist",        // Diabetes specialist
       date: "April 28, 2023",
       summary: "Follow-up for diabetes management. A1C levels improved to 6.8%.",
     },
   ]
 
+  // ============================================================================
+  // DASHBOARD RENDER - Main Patient Interface Layout
+  // ============================================================================
   return (
     <DashboardLayout role="patient">
       <div className="space-y-6">
+        {/* ============================================================================ */}
+        {/* WELCOME SECTION - Personalized Greeting */}
+        {/* ============================================================================ */}
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.name}</h1>
           <p className="text-muted-foreground">
@@ -84,11 +112,15 @@ export default function PatientDashboard() {
           </p>
         </div>
 
+        {/* ============================================================================ */}
+        {/* QUICK ACTIONS GRID - Main Feature Access Cards */}
+        {/* ============================================================================ */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action) => (
             <Card key={action.title} className="overflow-hidden">
               <Link href={action.href}>
                 <CardHeader className="p-4 pb-0">
+                  {/* Icon container with themed background */}
                   <div className={`rounded-full p-2 w-12 h-12 flex items-center justify-center ${action.color}`}>
                     <action.icon className="h-6 w-6" />
                   </div>
@@ -102,7 +134,12 @@ export default function PatientDashboard() {
           ))}
         </div>
 
+        {/* ============================================================================ */}
+        {/* INFORMATION PANELS - Reminders and Recent Activity */}
+        {/* ============================================================================ */}
         <div className="grid gap-6 md:grid-cols-2">
+          
+          {/* MEDICATION REMINDERS PANEL */}
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -112,6 +149,7 @@ export default function PatientDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* Display each upcoming medication reminder */}
                 {upcomingReminders.map((reminder, index) => (
                   <div key={index} className="flex items-center justify-between">
                     <div>
@@ -127,12 +165,14 @@ export default function PatientDashboard() {
               </div>
             </CardContent>
             <CardFooter>
+              {/* Link to full medication management page */}
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/medicine-reminder">View All Reminders</Link>
               </Button>
             </CardFooter>
           </Card>
 
+          {/* RECENT MEDICAL INTERACTIONS PANEL */}
           <Card>
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -142,6 +182,7 @@ export default function PatientDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
+                {/* Display each recent medical interaction */}
                 {recentInteractions.map((interaction, index) => (
                   <div key={index} className="space-y-1">
                     <div className="flex items-center justify-between">
@@ -155,6 +196,7 @@ export default function PatientDashboard() {
               </div>
             </CardContent>
             <CardFooter>
+              {/* Link to full interaction history search */}
               <Button variant="outline" className="w-full" asChild>
                 <Link href="/search">View All Interactions</Link>
               </Button>
