@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { Brain, Loader2, Plus, Save } from "lucide-react"
+import { saveFlashcard } from "@/lib/firebase";
 
 export default function CreateFlashcardsPage() {
   const { user } = useAuth()
@@ -89,48 +90,33 @@ export default function CreateFlashcardsPage() {
     })
   }
 
-  const saveFlashcards = async () => {
-    if (flashcards.length === 0) {
-      toast({
-        title: "No flashcards",
-        description: "Please create at least one flashcard before saving.",
-        variant: "destructive",
-      })
-      return
+const saveFlashcards = async () => {
+  if (flashcards.length === 0) return;
+
+  setIsSaving(true);
+
+  try {
+    for (const card of flashcards) {
+      await saveFlashcard(card.title, card.content, "Uncategorized");
     }
 
-    setIsSaving(true)
+    toast({
+      title: "Flashcards saved",
+      description: `${flashcards.length} flashcards saved to Firebase.`,
+    });
 
-    try {
-      // In a real app, this would be an API call
-      // Simulating API call with timeout
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
-      // In a real app, we would save the flashcards to a database
-      // For now, we'll just simulate saving to localStorage
-      const savedFlashcards = JSON.parse(localStorage.getItem("medilog-flashcards") || "[]")
-      localStorage.setItem("medilog-flashcards", JSON.stringify([...savedFlashcards, ...flashcards]))
-
-      toast({
-        title: "Flashcards saved",
-        description: `${flashcards.length} flashcards have been saved successfully.`,
-      })
-
-      // Clear the form and flashcards after saving
-      setFlashcards([])
-      setTitle("")
-      setContent("")
-    } catch (error) {
-      console.error("Error saving flashcards:", error)
-      toast({
-        title: "Error",
-        description: "Failed to save flashcards. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSaving(false)
-    }
+    setFlashcards([]);
+  } catch (err) {
+    console.error(err);
+    toast({
+      title: "Error",
+      description: "Failed to save flashcards",
+      variant: "destructive",
+    });
+  } finally {
+    setIsSaving(false);
   }
+};
 
   return (
     <DashboardLayout role={user?.role || "patient"}>

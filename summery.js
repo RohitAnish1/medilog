@@ -7,12 +7,11 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";    // Google's Generative AI SDK
 import { saveFlashcard } from "./lib/firebase.ts";             // Firebase storage function for flashcards
-
 // ============================================================================
 // API CONFIGURATION - Gemini AI Setup
 // ============================================================================
 // Use environment variables for API key management (currently hardcoded for demo)
-const GEMINI_API_KEY = "AIzaSyAXBibfzvW9ZixCsIzlekXQ75QofPfwhO8";
+const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 // Configure Gemini AI instance using the API key
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -33,7 +32,7 @@ export async function summarizeText(text) {
     // AI MODEL INITIALIZATION - Load Gemini Model
     // ============================================================================
     // Retrieve the generative model (gemini-1.5-flash is optimized for speed)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     console.log(">>> Model successfully loaded:", model);
 
     // ============================================================================
@@ -109,14 +108,3 @@ export async function summarizeText(text) {
   }
 }
 
-// Example text to summarize
-(async () => {
-  try {
-    const result = await summarizeText(
-      "Students are the backbone of the future, constantly learning, growing, and adapting to new challenges. Whether in elementary school, high school, or university, they develop critical thinking skills, discipline, and resilience through their studies. Balancing academics, extracurricular activities, and social life can be demanding, but it also shapes them into well-rounded individuals. With the rise of digital learning tools and online education, students now have more resources than ever to enhance their knowledge and skills. Success in education requires dedication, curiosity, and a willingness to learn from both successes and failures.MediLog is an innovative app for managing medical records and integrating flashcards for education."
-    );
-    console.log(">>> Summary result:", result);
-  } catch (err) {
-    console.error(">>> Failed to summarize text:", err.message);
-  }
-})();
