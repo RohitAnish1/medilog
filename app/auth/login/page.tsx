@@ -19,7 +19,6 @@ import { Label } from "@/components/ui/label"                   // Form label co
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group" // Radio button components for role selection
 import { Brain, Loader2 } from "lucide-react"                  // Icon components
 import { useToast } from "@/components/ui/use-toast"            // Toast notification hook
-
 // ============================================================================
 // LOGIN PAGE MAIN COMPONENT
 // ============================================================================
@@ -27,9 +26,8 @@ export default function LoginPage() {
   // ============================================================================
   // HOOKS AND STATE - Authentication and UI State Management
   // ============================================================================
-  const { login, isLoading } = useAuth()                       // Authentication functions and loading state
+  const { login, loginWithGoogle, isLoading } = useAuth()                       // Authentication functions and loading state
   const { toast } = useToast()                                 // Toast notification system
-  
   // Form input state variables
   const [email, setEmail] = useState("")                       // User email input
   const [password, setPassword] = useState("")                 // User password input
@@ -143,6 +141,28 @@ export default function LoginPage() {
                 "Log in"
               )}
             </Button>
+            <Button
+    type="button"
+    className="w-full bg-white text-deep-teal border mt-2"
+    disabled={isLoading}
+    onClick={async () => {
+      try {
+        await loginWithGoogle()
+        toast({
+          title: "Login successful",
+          description: "Welcome back to MediLog!",
+        })
+      } catch (error) {
+        toast({
+          title: "Google login failed",
+          description: "Please try again.",
+          variant: "destructive",
+        })
+      }
+    }}
+  >
+    Sign in with Google
+  </Button>
             <div className="text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link

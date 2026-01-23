@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 import { Brain, Loader2, Plus, Save } from "lucide-react"
-import { saveFlashcard } from "@/lib/firebase";
+import { saveUserFlashcard } from "@/lib/firebase";
 
 export default function CreateFlashcardsPage() {
   const { user } = useAuth()
@@ -91,13 +91,13 @@ export default function CreateFlashcardsPage() {
   }
 
 const saveFlashcards = async () => {
-  if (flashcards.length === 0) return;
+  if (flashcards.length === 0 || !user?.id) return;
 
   setIsSaving(true);
 
   try {
     for (const card of flashcards) {
-      await saveFlashcard(card.title, card.content, "Uncategorized");
+      await saveUserFlashcard(user.id, card.title, card.content, "Uncategorized");
     }
 
     toast({
@@ -117,7 +117,6 @@ const saveFlashcards = async () => {
     setIsSaving(false);
   }
 };
-
   return (
     <DashboardLayout role={user?.role || "patient"}>
       <div className="space-y-6">

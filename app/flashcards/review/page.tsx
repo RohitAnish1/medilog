@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ChevronLeft, ChevronRight, Search, X } from "lucide-react"
-import { fetchFlashcards } from "@/lib/firebase"; // Import the fetchFlashcards function
+import { fetchUserFlashcards } from "@/lib/firebase"; // Import the fetchFlashcards function
 
 type Flashcard = {
   title: string
@@ -30,18 +30,19 @@ export default function ReviewFlashcardsPage() {
   const categories = ["Medications", "Symptoms", "Procedures", "Doctor's Advice", "All"]
 
   useEffect(() => {
-    const loadFlashcards = async () => {
-      try {
-        const fetchedFlashcards = await fetchFlashcards(); // Fetch flashcards from Firebase
-        setFlashcards(fetchedFlashcards);
-        setFilteredFlashcards(fetchedFlashcards);
-      } catch (error) {
-        console.error("Error fetching flashcards:", error);
-      }
-    };
+  const loadFlashcards = async () => {
+    if (!user?.id) return
+    try {
+      const fetchedFlashcards = await fetchUserFlashcards(user.id)
+      setFlashcards(fetchedFlashcards)
+      setFilteredFlashcards(fetchedFlashcards)
+    } catch (error) {
+      console.error("Error fetching flashcards:", error)
+    }
+  }
 
-    loadFlashcards();
-  }, []);
+  loadFlashcards()
+}, [user?.id])
 
   useEffect(() => {
     // Filter flashcards based on search term and category

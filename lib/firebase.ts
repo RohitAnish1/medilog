@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
-
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,42 +14,44 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-const fetchFlashcards = async () => {
-  const flashcardsCollection = collection(db, "FLASH-DATA");
-  const snapshot = await getDocs(flashcardsCollection);
-
+export const fetchUserFlashcards = async (userId: string) => {
+  const flashcardsCollection = collection(db, `users/${userId}/flashcards`)
+  const snapshot = await getDocs(flashcardsCollection)
   return snapshot.docs.map((doc) => {
-    const data = doc.data();
+    const data = doc.data()
     return {
       id: doc.id,
       title: data.title || "Untitled",
       content: data.content || "No content available",
       category: data.category || "Uncategorized",
       date: data.date || null,
-    };
-  });
-};
+    }
+  })
+}
 
-const saveFlashcard = async (title: string, content: string, category: string) => {
-  const flashcardsCollection = collection(db, "FLASH-DATA");
+export const saveUserFlashcard = async (
+  userId: string,
+  title: string,
+  content: string,
+  category: string
+) => {
+  const flashcardsCollection = collection(db, `users/${userId}/flashcards`)
   try {
     await addDoc(flashcardsCollection, {
       title: title || "Untitled",
       content: content || "No content available",
       category: category || "Uncategorized",
       date: new Date().toISOString(),
-    });
+    })
   } catch (error) {
-    console.error("Error adding document: ", error);
+    console.error("Error adding document: ", error)
   }
-};
+}
 
-// Do not call testSaveFlashcard() here
-const testSaveFlashcard = async () => {
-  console.log("Testing saveFlashcard...");
-  await saveFlashcard("Test Title", "Test Content", "Test Category");
-};
+
 
 // Export only the needed functions
-export { db, fetchFlashcards, saveFlashcard, testSaveFlashcard };
+export { db, auth, googleProvider};

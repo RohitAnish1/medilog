@@ -6,7 +6,7 @@
 // to structured flashcard format for easy review and study
 
 import { GoogleGenerativeAI } from "@google/generative-ai";    // Google's Generative AI SDK
-import { saveFlashcard } from "./lib/firebase.ts";             // Firebase storage function for flashcards
+import { saveUserFlashcard } from "./lib/firebase.ts";             // Firebase storage function for flashcards
 // ============================================================================
 // API CONFIGURATION - Gemini AI Setup
 // ============================================================================
@@ -89,7 +89,7 @@ export async function summarizeText(text) {
 
     // Save the summary to Firebase using the `saveFlashcard` function
     console.log(">>> Saving formatted summary to Firebase...");
-    await saveFlashcard(
+    await saveUserFlashcard(
       formattedSummary.title,
       formattedSummary.content,
       formattedSummary.category
