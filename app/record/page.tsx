@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label";                   // Form labels
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"; // Tab navigation
 import { useToast } from "@/components/ui/use-toast";            // Toast notifications
 import { Brain, Loader2, Mic, MicOff } from "lucide-react";     // Icon components
-import { saveFlashcard } from "@/lib/firebase";                 // Firebase flashcard storage function
+import { saveUserFlashcard } from "@/lib/firebase";                 // Firebase flashcard storage function
 
 // Import summarizeText function from your module
 import { summarizeText } from "../../summery.js";               // AI summarization utility
@@ -127,43 +127,57 @@ export default function RecordPage() {
   };
 
   const generateSummary = async () => {
-    if (!transcript.trim()) {
+  if (!transcript.trim()) {
+    toast({
+      title: "No transcript",
+      description: "Please record or enter text before generating a summary.",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  if (!user || !user.id) {
+    toast({
+      title: "Not signed in",
+      description: "You must be signed in to save a summary.",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  console.log("Sending transcript to summarizeText function:", transcript);
+  setIsSummarizing(true);
+
+  try {
+    const formattedSummary = await summarizeText(transcript);
+    console.log("Received summary response from summarizeText function:", formattedSummary);
+
+    if (formattedSummary) {
+      setSummary(formattedSummary.content); // Update the summary state
+
+      // Save the summary to Firebase
+      await saveUserFlashcard(
+        user.id,
+        "Generated Summary",
+        formattedSummary.content,
+        "Summaries"
+      );
       toast({
-        title: "No transcript",
-        description: "Please record or enter text before generating a summary.",
-        variant: "destructive",
+        title: "Summary saved",
+        description: "The summary has been saved as a flashcard.",
       });
-      return;
     }
-
-    console.log("Sending transcript to summarizeText function:", transcript);
-    setIsSummarizing(true);
-
-    try {
-      const formattedSummary = await summarizeText(transcript);
-      console.log("Received summary response from summarizeText function:", formattedSummary);
-
-      if (formattedSummary) {
-        setSummary(formattedSummary.content); // Update the summary state
-
-        // Save the summary to Firebase
-        await saveFlashcard("Generated Summary", formattedSummary.content, "Summaries");
-        toast({
-          title: "Summary saved",
-          description: "The summary has been saved as a flashcard.",
-        });
-      }
-    } catch (error) {
-      console.error("Error generating summary:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate summary. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSummarizing(false);
-    }
-  };
+  } catch (error) {
+    console.error("Error generating summary:", error);
+    toast({
+      title: "Error",
+      description: "Failed to generate summary. Please try again.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsSummarizing(false);
+  }
+};
 
   return (
     <DashboardLayout role={user?.role || "patient"}>
