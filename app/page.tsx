@@ -278,56 +278,6 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-pale-blue/30">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight text-deep-teal">
-                  What Our Users Say
-                </h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Hear from doctors and patients who use MediLog to streamline their medical documentation.
-                </p>
-              </div>
-            </div>
-            <div className="mx-auto grid max-w-5xl gap-6 py-12 lg:grid-cols-2">
-              <div className="flex flex-col justify-between rounded-lg border bg-white p-6 shadow-card hover:shadow-elevated transition-all">
-                <div className="space-y-2">
-                  <p className="text-muted-foreground">
-                    "MediLog has transformed how I document patient interactions. The voice-to-text feature saves me
-                    hours each week, and the AI summaries help me quickly review past consultations."
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 pt-4">
-                  <div className="rounded-full bg-deep-teal/10 h-10 w-10 flex items-center justify-center">
-                    <span className="text-deep-teal font-bold">SJ</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Dr. Sarah Johnson</p>
-                    <p className="text-sm text-muted-foreground">Cardiologist</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex flex-col justify-between rounded-lg border bg-white p-6 shadow-card hover:shadow-elevated transition-all">
-                <div className="space-y-2">
-                  <p className="text-muted-foreground">
-                    "As a patient with multiple chronic conditions, MediLog helps me keep track of all my medical
-                    information in one place. The medication reminders are a lifesaver!"
-                  </p>
-                </div>
-                <div className="flex items-center gap-4 pt-4">
-                  <div className="rounded-full bg-deep-teal/10 h-10 w-10 flex items-center justify-center">
-                    <span className="text-deep-teal font-bold">MR</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Michael Rodriguez</p>
-                    <p className="text-sm text-muted-foreground">Patient</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
         <section className="w-full py-12 md:py-24 lg:py-32 bg-deep-teal text-white">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">

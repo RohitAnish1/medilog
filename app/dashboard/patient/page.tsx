@@ -6,20 +6,29 @@
 // and recent medical interactions overview for easy patient management
 
 "use client"
-
+import { useEffect, useState } from "react"
 import { useAuth } from "@/components/auth-provider"           // Authentication context
 import { DashboardLayout } from "@/components/dashboard-layout" // Dashboard wrapper component
 import { Button } from "@/components/ui/button"                 // Reusable button component
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card" // Card components
 import { Calendar, Clock, FileText, Mic, PlusCircle } from "lucide-react" // Icon components
 import Link from "next/link"                                    // Next.js navigation component
-
+import { fetchUserReminders } from "@/lib/firebase"
+type Reminder = {
+  id: string
+  medicine: string
+  dosage: string
+  frequency: string
+  time: string
+  days: string[]
+  notes?: string
+}
 // ============================================================================
 // PATIENT DASHBOARD MAIN COMPONENT
 // ============================================================================
 export default function PatientDashboard() {
   const { user } = useAuth()  // Get current authenticated user
-
+  const [upcomingReminders, setUpcomingReminders] = useState<Reminder[]>([])
   // ============================================================================
   // QUICK ACTIONS DATA - Primary Feature Access Points
   // ============================================================================
@@ -59,23 +68,7 @@ export default function PatientDashboard() {
   // UPCOMING REMINDERS DATA - Next Medication Schedule
   // ============================================================================
   // Mock data for displaying upcoming medication reminders (would come from database)
-  const upcomingReminders = [
-    {
-      medicine: "Lisinopril",              // Blood pressure medication
-      time: "8:00 AM",
-      date: "Today",
-    },
-    {
-      medicine: "Metformin",               // Diabetes medication
-      time: "1:00 PM",
-      date: "Today",
-    },
-    {
-      medicine: "Atorvastatin",            // Cholesterol medication
-      time: "8:00 PM",
-      date: "Today",
-    },
-  ]
+  
 
   // ============================================================================
   // RECENT INTERACTIONS DATA - Medical History Preview
@@ -95,7 +88,10 @@ export default function PatientDashboard() {
       summary: "Follow-up for diabetes management. A1C levels improved to 6.8%.",
     },
   ]
-
+   useEffect(() => {
+    if (!user?.id) return
+    fetchUserReminders(user.id).then(setUpcomingReminders)
+  }, [user?.id])
   // ============================================================================
   // DASHBOARD RENDER - Main Patient Interface Layout
   // ============================================================================
@@ -154,7 +150,6 @@ export default function PatientDashboard() {
                   <div key={index} className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">{reminder.medicine}</p>
-                      <p className="text-sm text-muted-foreground">{reminder.date}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground" />

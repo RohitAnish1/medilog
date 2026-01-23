@@ -33,7 +33,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-
+import { fetchUserReminders, saveUserReminder, deleteUserReminder } from "@/lib/firebase"
 type Reminder = {
   id: string
   medicine: string
@@ -60,48 +60,13 @@ export default function MedicineReminderPage() {
   })
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  useEffect(() => {
-    // In a real app, this would be an API call
-    // For now, we'll just use localStorage or mock data
-    const savedReminders = JSON.parse(localStorage.getItem("medilog-reminders") || "[]")
-
-    // If no saved reminders, use mock data
-    const mockReminders: Reminder[] =
-      savedReminders.length > 0
-        ? savedReminders
-        : [
-            {
-              id: "1",
-              medicine: "Lisinopril",
-              dosage: "10mg",
-              frequency: "daily",
-              time: "08:00",
-              days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-              notes: "Take with food",
-            },
-            {
-              id: "2",
-              medicine: "Metformin",
-              dosage: "500mg",
-              frequency: "twice-daily",
-              time: "13:00",
-              days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-              notes: "Take with lunch",
-            },
-            {
-              id: "3",
-              medicine: "Atorvastatin",
-              dosage: "20mg",
-              frequency: "daily",
-              time: "20:00",
-              days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-              notes: "Take in the evening",
-            },
-          ]
-
-    setReminders(mockReminders)
-    setIsLoading(false)
-  }, [])
+   useEffect(() => {
+    if (!user?.id) return
+    setIsLoading(true)
+    fetchUserReminders(user.id)
+      .then((reminders) => setReminders(reminders))
+      .finally(() => setIsLoading(false))
+  }, [user?.id])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -121,6 +86,7 @@ export default function MedicineReminderPage() {
   }
 
   const addReminder = async () => {
+    if (!user?.id) return;
     if (!newReminder.medicine || !newReminder.dosage || !newReminder.time) {
       toast({
         title: "Missing information",
@@ -140,25 +106,10 @@ export default function MedicineReminderPage() {
     }
 
     setIsSaving(true)
-
     try {
-      // In a real app, this would be an API call
-      // Simulating API call with timeout
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      const newReminderWithId: Reminder = {
-        ...newReminder,
-        id: `reminder-${Date.now()}`,
-      }
-
-      const updatedReminders = [...reminders, newReminderWithId]
+      await saveUserReminder(user.id, newReminder)
+      const updatedReminders = await fetchUserReminders(user.id)
       setReminders(updatedReminders)
-
-      // In a real app, we would save to a database
-      // For now, we'll just save to localStorage
-      localStorage.setItem("medilog-reminders", JSON.stringify(updatedReminders))
-
-      // Reset form
       setNewReminder({
         medicine: "",
         dosage: "",
@@ -167,9 +118,7 @@ export default function MedicineReminderPage() {
         days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         notes: "",
       })
-
       setIsDialogOpen(false)
-
       toast({
         title: "Reminder added",
         description: "Your medication reminder has been added successfully.",
@@ -187,18 +136,12 @@ export default function MedicineReminderPage() {
   }
 
   const deleteReminder = async (id: string) => {
+    if (!user?.id) return; 
+    setIsSaving(true)
     try {
-      // In a real app, this would be an API call
-      // Simulating API call with timeout
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      const updatedReminders = reminders.filter((reminder) => reminder.id !== id)
+      await deleteUserReminder(user.id, id)
+      const updatedReminders = await fetchUserReminders(user.id)
       setReminders(updatedReminders)
-
-      // In a real app, we would update the database
-      // For now, we'll just update localStorage
-      localStorage.setItem("medilog-reminders", JSON.stringify(updatedReminders))
-
       toast({
         title: "Reminder deleted",
         description: "Your medication reminder has been deleted.",
@@ -210,6 +153,8 @@ export default function MedicineReminderPage() {
         description: "Failed to delete reminder. Please try again.",
         variant: "destructive",
       })
+    } finally {
+      setIsSaving(false)
     }
   }
 

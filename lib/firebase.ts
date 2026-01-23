@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc,deleteDoc, doc  } from "firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
@@ -16,6 +16,16 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
+
+type Reminder = {
+  id: string
+  medicine: string
+  dosage: string
+  frequency: string
+  time: string
+  days: string[]
+  notes?: string
+}
 
 export const fetchUserFlashcards = async (userId: string) => {
   const flashcardsCollection = collection(db, `users/${userId}/flashcards`)
@@ -51,6 +61,32 @@ export const saveUserFlashcard = async (
   }
 }
 
+export const fetchUserReminders = async (userId: string) => {
+  const remindersCollection = collection(db, `users/${userId}/reminders`)
+  const snapshot = await getDocs(remindersCollection)
+  return snapshot.docs.map((doc) => {
+    const data = doc.data()
+    return {
+      id: doc.id,
+      medicine: data.medicine || "",
+      dosage: data.dosage || "",
+      frequency: data.frequency || "",
+      time: data.time || "",
+      days: data.days || [],
+      notes: data.notes || "",
+    } as Reminder
+  })
+}
+
+export const saveUserReminder = async (userId: string, reminder: Omit<Reminder, "id">) => {
+  const remindersCollection = collection(db, `users/${userId}/reminders`)
+  await addDoc(remindersCollection, reminder)
+}
+
+export const deleteUserReminder = async (userId: string, reminderId: string) => {
+  const reminderDoc = doc(db, `users/${userId}/reminders/${reminderId}`)
+  await deleteDoc(reminderDoc)
+}
 
 
 // Export only the needed functions
